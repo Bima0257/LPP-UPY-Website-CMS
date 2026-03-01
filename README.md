@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">
@@ -59,3 +60,7 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+=======
+# LPP-UPY-Website-CMS
+LembagaPengembanganPendidikan-UPY-Website-CMS is a Laravel-based web application for managing and publishing educational content efficiently. It features an easy CMS and admin dashboard to support digital services at Universitas PGRI Yogyakarta. Website: https://lpp.upy.ac.id/
+>>>>>>> 216d05cc61c55bc82c390b7f89ecfc030b72d20a
