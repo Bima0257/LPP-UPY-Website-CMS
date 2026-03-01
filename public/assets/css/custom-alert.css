@@ -1,0 +1,54 @@
+/* ==== Custom SweetAlert2 Style ==== */
+.swal2-popup {
+    border-radius: 1rem !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15) !important;
+    padding: 1.5rem !important;
+    font-family: "Poppins", sans-serif !important;
+}
+
+.swal2-title {
+    font-size: 1.4rem !important;
+    font-weight: 600 !important;
+    color: #2b2b2b !important;
+}
+
+.swal2-html-container {
+    font-size: 0.95rem !important;
+    color: #555 !important;
+    margin-top: 10px !important;
+}
+
+.swal2-styled.swal2-confirm {
+    background-color: #0d6efd !important;
+    border-radius: 8px !important;
+    padding: 8px 24px !important;
+    font-weight: 500 !important;
+    box-shadow: 0 4px 10px rgba(13, 110, 253, 0.3) !important;
+    transition: all 0.2s ease-in-out;
+}
+
+.swal2-styled.swal2-confirm:hover {
+    background-color: #0b5ed7 !important;
+    transform: translateY(-1px);
+}
+
+.swal2-styled.swal2-cancel {
+    background-color: #dc3545 !important;
+    border-radius: 8px !important;
+    padding: 8px 24px !important;
+    font-weight: 500 !important;
+    transition: all 0.2s ease-in-out;
+}
+
+.swal2-icon {
+    margin-top: 0.5rem !important;
+    border-width: 3px !important;
+}
+
+.swal2-success-ring {
+    border: 3px solid rgba(13, 110, 253, 0.3) !important;
+}
+
+.swal2-timer-progress-bar {
+    background: linear-gradient(90deg, #0d6efd, #00bcd4) !important;
+}
