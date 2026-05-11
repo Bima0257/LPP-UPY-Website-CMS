@@ -12,11 +12,20 @@
                         Tambah Carousel
                     </a>
 
-                    <table id="datatable" class="table table-bordered dt-responsive nowrap"
+                    <div class="alert alert-info d-flex align-items-center" role="alert">
+                        <i class="ri-drag-move-line me-2"></i>
+                        <div>
+                            Untuk <strong>mengubah urutan carousel</strong>,arahkan mouse ke kolom Drag & Drop lalu
+                            seret (drag) dan lepaskan (drop) baris ke posisi yang diinginkan.
+                        </div>
+                    </div>
+
+                    <table id="carouselTable" class="table table-bordered dt-responsive nowrap"
                         style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                         <thead>
                             <tr>
-                                <th>No</th>
+                                <th>Drag & Drop</th>
+                                <th>Urutan</th>
                                 <th>Author</th>
                                 <th>Image</th>
                                 <th>Title</th>
@@ -26,9 +35,12 @@
                         </thead>
 
                         <tbody>
-                            @foreach ($carousels as $carousel)
-                                <tr>
-                                    <td>{{ $loop->iteration }}</td>
+                            @foreach ($carousels->sortBy('sort_order') as $carousel)
+                                <tr data-id="{{ $carousel->id }}">
+                                    <td class="drag-handle" style="cursor: grab;">
+                                        <i class="ri-drag-move-line text-primary"></i>
+                                    </td>
+                                    <td class="order-number">{{ $carousel->sort_order }}</td>
                                     <td>{{ $carousel->author?->name ?? '-' }}</td>
                                     <td>
                                         <img src="{{ asset('storage/' . $carousel->image) }}" alt="carousel-img"
@@ -73,3 +85,107 @@
         </div> <!-- end col -->
     </div> <!-- end row-->
 </x-admin.layout>
+<script>
+    $(document).ready(function() {
+        const table = $('#carouselTable').DataTable({
+            rowReorder: {
+                selector: '.drag-handle',
+                update: false
+            },
+            paging: true,
+            info: false,
+            searching: false,
+            ordering: false,
+            autoWidth: false
+        });
+
+        // Hover effect
+        $('#carouselTable tbody')
+            .on('mouseenter', 'tr', function() {
+                if (!$(this).hasClass('dt-rowReorder-moving')) {
+                    $(this).addClass('table-primary');
+                }
+            })
+            .on('mouseleave', 'tr', function() {
+                $(this).removeClass('table-primary');
+            });
+
+        // Cursor drag
+        table.on('row-reorder-start', function() {
+            $('body').css('cursor', 'grabbing');
+        });
+
+        table.on('row-reorder-end', function() {
+            $('body').css('cursor', 'default');
+        });
+
+        let isReordering = false;
+
+        table.on('row-reorder', function(e, diff, edit) {
+
+            if (isReordering) return;
+            if (!diff.length) return;
+
+            const order = [];
+
+            $('#carouselTable tbody tr').each(function(index) {
+                const id = $(this).data('id');
+
+                if (id) {
+                    order.push(id); // ✅ lebih simple (sesuai service)
+                }
+            });
+
+            isReordering = true;
+
+            $.ajax({
+                url: "{{ route('carousels-management.reorder') }}",
+                method: "POST",
+                data: {
+                    order: order,
+                    _token: "{{ csrf_token() }}"
+                },
+                beforeSend: function() {
+                    Swal.fire({
+                        title: 'Menyimpan...',
+                        allowOutsideClick: false,
+                        didOpen: () => Swal.showLoading()
+                    });
+                },
+                success: function(res) {
+
+                    if (res.success) {
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil',
+                            timer: 1200,
+                            showConfirmButton: false
+                        });
+
+                        // update nomor urutan UI
+                        $('#carouselTable tbody tr').each(function(index) {
+                            $(this).find('.order-number').text(index + 1);
+                        });
+
+                    } else {
+                        table.draw(false);
+                    }
+                },
+                error: function() {
+                    table.draw(false);
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal menyimpan urutan'
+                    });
+                },
+                complete: function() {
+                    isReordering = false;
+                }
+            });
+
+        });
+
+    });
+</script>

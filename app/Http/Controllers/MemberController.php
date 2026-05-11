@@ -8,6 +8,7 @@ use App\Http\Requests\StoreMemberRequest;
 use App\Http\Requests\UpdateMemberRequest;
 use App\Services\MemberService;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class MemberController extends Controller
 {
@@ -28,7 +29,7 @@ class MemberController extends Controller
             'admin.member.index',
             [
                 'title' => 'Member',
-                'members' => Member::all()
+                'members' => Member::orderBy('sort_order')->get(),
             ]
         );
     }
@@ -49,6 +50,7 @@ class MemberController extends Controller
         $this->memberService->store($request->validated());
 
         Cache::forget('members');
+        Cache::forget('dashboard.members');
 
         return redirect()->route('members.index')
             ->with('success', 'Data member berhasil ditambahkan!');
@@ -79,6 +81,7 @@ class MemberController extends Controller
         $this->memberService->update($member, $request->validated());
 
         Cache::forget('members');
+        Cache::forget('dashboard.members');
 
         return redirect()->route('members.index')
             ->with('success', 'Data member berhasil diperbarui!');
@@ -90,18 +93,24 @@ class MemberController extends Controller
     public function destroy(Member $member)
     {
         $this->memberService->delete($member);
+        Cache::forget('members');
+        Cache::forget('dashboard.members');
 
         return redirect('/members')->with('success', 'Member Telah Di hapus!');
     }
 
     public function updateOrder(Request $request)
     {
-        foreach ($request->order as $index => $id) {
-            Member::where('id', $id)->update(['sort_order' => $index + 1]);
-        }
+        DB::transaction(function () use ($request) {
+            foreach ($request->order as $index => $id) {
+                Member::where('id', $id)
+                    ->update(['sort_order' => $index + 1]);
+            }
+        });
 
         Cache::forget('members');
-        
+        Cache::forget('dashboard.members');
+
         return response()->json(['success' => true]);
     }
 }

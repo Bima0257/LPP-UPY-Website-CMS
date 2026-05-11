@@ -1,4 +1,4 @@
-<x-landingpage.layout>
+<x-landingpage.layout :title='$title'>
 
     <!-- ====== Hero Carousel Full-Width Start ====== -->
     <section id="home">
@@ -8,47 +8,51 @@
                 @if ($carousels->isEmpty())
                     <!-- Default Slide -->
                     <div class="carousel-item active"
-                        style="background: url('{{ asset('assets/images/background/brandi-redd-aJTiW00qqtI-unsplash.jpg') }}') center/cover no-repeat; height: 100vh;">
-                        <div class="d-flex h-100 align-items-center justify-content-center text-center text-white">
-                        </div>
+                        style="background: url('{{ asset('assets/images/default/default1.jpg') }}') center/cover no-repeat; height: 100vh;">
                     </div>
                 @else
                     @foreach ($carousels as $index => $carousel)
-                        <div class="carousel-item {{ $index == 0 ? 'active' : '' }}">
-                            <img src="{{ $carousel->image ? asset('storage/' . $carousel->image) : asset('assets/images/blog/blog-01.jpg') }}"
-                                class="d-block w-100" alt="{{ $carousel->title ?? '-' }}"
-                                style="object-fit: cover; height: 100vh; max-height: 600px;">
+                        <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
 
-                            <!-- Konten -->
-                            <div
-                                class="d-flex flex-column justify-content-end h-100 text-center text-white pb-5 position-absolute top-0 start-0 w-100">
+                            {{-- Gambar --}}
+                            <img src="{{ $carousel->image ? asset('storage/' . $carousel->image) : asset('assets/images/blog/blog-01.jpg') }}"
+                                class="d-block w-100" alt="{{ $carousel->title ?? '' }}">
+
+                            {{-- Overlay gradient --}}
+                            <div class="carousel-item__overlay"></div>
+
+                            {{-- Teks: judul + deskripsi (tengah vertikal) --}}
+                            <div class="carousel-item__text">
                                 <div class="container">
-                                    <h1 class="display-4 fw-bold text-white">{!! $carousel->title ?? '-' !!}</h1>
-                                    <p class="lead mx-auto w-75 text-white carousel-description"
-                                        style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
-                                        {!! Str::limit(strip_tags($carousel->description ?? '-'), 120) !!}
-                                    </p>
-                                    <a href="{{ $carousel->btn_link ?? '#' }}" class="btn ud-main-btn mt-4">Show
-                                        More</a>
+                                    <h1>{!! $carousel->title ?? '' !!}</h1>
+                                    <p>{!! Str::limit(strip_tags($carousel->description ?? ''), 120) !!}</p>
                                 </div>
                             </div>
+
+                            {{-- Tombol: menempel di atas pagination --}}
+                            <div class="carousel-item__btn">
+                                <a href="{{ filter_var($carousel?->btn_link, FILTER_VALIDATE_URL) ? $carousel->btn_link : '#' }}"
+                                    class="btn ud-main-btn">Show More</a>
+                            </div>
+
                         </div>
                     @endforeach
                 @endif
 
             </div>
 
-            <!-- Pagination & Controls -->
-            <div class="carousel-controls-wrapper d-flex justify-content-center align-items-center mt-2 mb-2 gap-3">
-                <div class="controls-inner">
-                    <!-- Controls -->
+            {{-- Pagination & Kontrol --}}
+            <div class="carousel-controls">
+                <div class="carousel-controls__inner">
+
+                    {{-- Tombol Prev --}}
                     <button class="carousel-control-prev position-static" type="button" data-bs-target="#heroCarousel"
                         data-bs-slide="prev">
                         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                         <span class="visually-hidden">Previous</span>
                     </button>
 
-                    <!-- Indicators -->
+                    {{-- Dots --}}
                     <div class="carousel-indicators position-static m-0">
                         @if ($carousels->isEmpty())
                             <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active"
@@ -56,12 +60,13 @@
                         @else
                             @foreach ($carousels as $index => $carousel)
                                 <button type="button" data-bs-target="#heroCarousel"
-                                    data-bs-slide-to="{{ $index }}"
-                                    class="{{ $index == 0 ? 'active' : '' }}"></button>
+                                    data-bs-slide-to="{{ $index }}" class="{{ $index === 0 ? 'active' : '' }}"
+                                    {{ $index === 0 ? 'aria-current=true' : '' }}></button>
                             @endforeach
                         @endif
                     </div>
 
+                    {{-- Tombol Next --}}
                     <button class="carousel-control-next position-static" type="button" data-bs-target="#heroCarousel"
                         data-bs-slide="next">
                         <span class="carousel-control-next-icon" aria-hidden="true"></span>
@@ -70,6 +75,7 @@
 
                 </div>
             </div>
+
         </div>
     </section>
     <!-- ====== Hero Carousel Full-Width End ====== -->
@@ -77,34 +83,27 @@
     <!-- ====== About Start ====== -->
     <section id="about" class="ud-about">
         <div class="container">
-            <div class="ud-about-wrapper wow fadeInUp position-relative" data-wow-delay=".2s">
+            <!-- Layout Flex -->
+            <div class="ud-about-flex d-flex align-items-start gap-4">
 
-                <!-- Layout Flex -->
-                <div class="ud-about-flex d-flex flex-column flex-lg-row align-items-start gap-4">
-
-                    <!-- Gambar About -->
-                    <div class="ud-about-image flex-shrink-0">
-                        <img src="{{ $about && $about->thumbnail ? asset('storage/' . $about->thumbnail) : asset('assets/images/background/brandi-redd-aJTiW00qqtI-unsplash.jpg') }}"
-                            alt="about-image" class="about-image" />
-                    </div>
-
-                    <!-- Konten About -->
-                    <div class="ud-about-content-wrapper flex-grow-1 position-relative">
-                        <div class="ud-about-content">
-                            <span class="tag">About - {{ $about->name ?? 'LPP-UPY' }}</span>
-                            <div class="custom-about-content">
-                                <h2 style="text-align: justify">{!! Str::limit($about->description ?? '-', 400, '...') !!}</h2>
-                            </div>
-                        </div>
-
-                    </div>
-
+                <!-- Gambar About -->
+                <div class="ud-about-image flex-shrink-0">
+                    <img src="{{ $about && $about->thumbnail ? asset('storage/' . $about->thumbnail) : asset('assets/images/background/brandi-redd-aJTiW00qqtI-unsplash.jpg') }}"
+                        alt="about-image" class="about-image" />
                 </div>
 
-                <a href="/abouts" class="ud-main-btn position-absolute learn-more-btn">
-                    Learn More
-                </a>
-
+                <!-- Konten About -->
+                <div class="ud-about-content-wrapper flex-grow-1 position-relative">
+                    <div class="ud-about-content">
+                        <span class="tag">About - {{ $about->name ?? 'LPP-UPY' }}</span>
+                        <div class="custom-about-content">
+                            <h2 style="text-align: justify">{!! Str::limit($about->description ?? '-', 400, '...') !!}</h2>
+                        </div>
+                    </div>
+                    <a href="/abouts" class="ud-main-btn learn-more-btn">
+                        Learn More
+                    </a>
+                </div>
             </div>
         </div>
     </section>
@@ -136,7 +135,9 @@
                             </div>
                             <div class="ud-feature-content">
                                 <!-- Judul Dokumen -->
-                                <h3 class="ud-feature-title mb-2">{{ $document->title ?? '-' }}</h3>
+                                <h3 class="ud-feature-title mb-2">
+                                    {!! \Illuminate\Support\Str::limit($document->title ?? '-', 20, '...') !!}
+                                </h3>
 
                                 <!-- Kategori -->
                                 <p class="ud-feature-desc text-muted mb-1">
@@ -144,7 +145,7 @@
                                 </p>
 
                                 <p class="text-muted small">
-                                    {{ $document->created_at ? $document->created_at->format('d M Y') : '-' }}
+                                    {{ \Carbon\Carbon::parse($document->date)->translatedFormat('d F Y') }}
                                 </p>
 
                                 <p class="ud-feature-desc mb-2">
@@ -152,44 +153,28 @@
                                 </p>
 
                                 <button class="btn btn-link text-primary p-0 mb-3 see-more-btn" data-bs-toggle="modal"
-                                    data-bs-target="#modalDesc{{ $document->id }}">
+                                    data-bs-target="#detailModal" data-title="{{ $document->title }}"
+                                    data-description="{!! htmlspecialchars($document->description) !!}"
+                                    data-category="{{ $document->category->name ?? '-' }}"
+                                    data-date="{{ \Carbon\Carbon::parse($document->date)->translatedFormat('d F Y') }}">
                                     Lihat Selengkapnya
                                 </button>
-
-                                <div class="modal fade custom-modal" id="modalDesc{{ $document->id }}" tabindex="-1">
-                                    <div class="modal-dialog modal-dialog-centered">
-                                        <div class="modal-content">
-
-                                            <div class="modal-header">
-                                                <h5 class="modal-title">Deskripsi Dokumen</h5>
-                                                <button type="button" class="btn-close"
-                                                    data-bs-dismiss="modal"></button>
-                                            </div>
-
-                                            <div class="modal-body">
-                                                <p id="modal-description">{!! $document->description !!}</p>
-                                            </div>
-
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary"
-                                                    data-bs-dismiss="modal">Tutup</button>
-                                            </div>
-
-                                        </div>
-                                    </div>
-                                </div>
 
                                 <!-- Tombol Aksi -->
                                 <div class="d-flex gap-2">
                                     @if ($document->is_protected)
-                                        <button class="btn btn-sm btn-primary text-white" data-bs-toggle="modal"
-                                            data-bs-target="#passwordModal" data-id="{{ $document->id }}">
-                                            <i class="mdi mdi-shield-lock"></i> Download
+                                        <button
+                                            class="btn btn-sm btn-warning text-white d-inline-flex align-items-center gap-1 btn-action-mobile"
+                                            data-bs-toggle="modal" data-bs-target="#passwordModal"
+                                            data-id="{{ $document->id }}">
+                                            <i class="mdi mdi-shield-lock"></i>
+                                            <span>Terproteksi</span>
                                         </button>
                                     @else
                                         <a href="{{ route('documents.download', $document->id) }}"
-                                            class="btn btn-sm btn-success text-white">
-                                            <i class="mdi mdi-download-circle"></i> Download
+                                            class="btn btn-sm btn-success text-white d-inline-flex align-items-center gap-1 btn-action-mobile">
+                                            <i class="mdi mdi-download-circle"></i>
+                                            <span>Download</span>
                                         </a>
                                     @endif
                                 </div>
@@ -206,6 +191,36 @@
                         </div>
                     </div>
                 @endforelse
+
+
+                <div class="modal fade custom-modal" id="detailModal" tabindex="-1">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="modalTitle"></h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+
+                            <div class="modal-body">
+                                <p id="modalDescription"></p>
+
+                                <hr>
+
+                                <small class="text-muted">
+                                    Kategori: <b id="modalCategory"></b><br>
+                                    Tanggal: <b id="modalDate"></b>
+                                </small>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary"
+                                    data-bs-dismiss="modal">Tutup</button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
 
                 <!-- Tombol Show More -->
                 <div class="col-12 show-more-wrapper mt-5">
@@ -287,8 +302,6 @@
     <!-- ====== Blog Start ====== -->
     <section class="ud-blog-grids" id="news">
         <div class="container">
-
-
             <!-- Section Header -->
             <div class="ud-section-title mx-auto text-center mb-5">
                 <span>Artikel</span>
@@ -308,7 +321,7 @@
                                             <div class="ud-single-blog h-100">
                                                 <div class="ud-blog-image">
                                                     <a href="{{ route('post.show', $post->slug ?? '-') }}">
-                                                        <img src="{{ $post->thumbnail ? asset('storage/' . $post->thumbnail) : asset('assets/images/background/brandi-redd-aJTiW00qqtI-unsplash.jpg') }}"
+                                                        <img src="{{ $post->thumbnail ? asset('storage/' . $post->thumbnail) : asset('assets/images/default/default1.jpg') }}"
                                                             class="img-fluid rounded w-100"
                                                             alt="{!! $post->title ?? '-' !!}">
                                                     </a>
@@ -316,7 +329,7 @@
 
                                                 <div class="ud-blog-content p-3">
                                                     <span class="ud-blog-date small mb-1">
-                                                        {{ $post->created_at->format('M d, Y') ?? '-' }}
+                                                        {{ \Carbon\Carbon::parse($post->date)->translatedFormat('d F Y') }}
                                                     </span>
                                                     <span class="d-block small mb-2">
                                                         By: {!! $post->author->name ?? 'Anonim' !!} —
@@ -325,7 +338,7 @@
                                                     <h3 class="ud-blog-title h6 fw-bold mb-2">
                                                         <a href="{{ route('post.show', $post->slug) ?? '#' }}"
                                                             class="text-dark text-decoration-none">
-                                                            {{ $post->title ?? '-' }}
+                                                            {!! \Illuminate\Support\Str::limit($post->title ?? '-', 23, '...') !!}
                                                         </a>
                                                     </h3>
 
@@ -495,37 +508,48 @@
                                 <h6>{{ $member->divisi }}</h6>
                             </div>
                             <ul class="ud-team-socials">
-                                <li>
-                                    <a href="{{ $member->facebook_link }}" target="_blank"><i
-                                            class="lni lni-facebook-filled"></i></a>
-                                </li>
-                                <li>
-                                    <a href="{{ $member->linkedin_link }}" target="_blank"><i
-                                            class="lni lni-linkedin-original"></i></a>
-                                </li>
-                                <li>
-                                    <a href="{{ $member->instagram_link }}" target="_blank"><i
-                                            class="lni lni-instagram-filled"></i></a>
-                                </li>
+                                @if (!empty($member->facebook_link) && filter_var($member?->facebook_link, FILTER_VALIDATE_URL))
+                                    <li>
+                                        <a href="{{ $member->facebook_link }}" target="_blank">
+                                            <i class="lni lni-facebook-filled"></i>
+                                        </a>
+                                    </li>
+                                @endif
+
+                                @if (!empty($member->linkedin_link) && filter_var($member?->linkedin_link, FILTER_VALIDATE_URL))
+                                    <li>
+                                        <a href="{{ $member->linkedin_link }}" target="_blank">
+                                            <i class="lni lni-linkedin-original"></i>
+                                        </a>
+                                    </li>
+                                @endif
+
+                                @if (!empty($member->instagram_link) && filter_var($member?->instagram_link, FILTER_VALIDATE_URL))
+                                    <li>
+                                        <a href="{{ $member->instagram_link }}" target="_blank">
+                                            <i class="lni lni-instagram-filled"></i>
+                                        </a>
+                                    </li>
+                                @endif
                             </ul>
                         </div>
                     </div>
 
                 @empty
-                    <div class="carousel-item active">
-                        <div class="row justify-content-center">
-                            <p class="text-center">Belum ada anggota tim yang ditambahkan.</p>
+                    <div class="col-12">
+                        <div class="text-center py-4">
+                            <p class="mb-0">
+                                Belum ada anggota tim yang ditambahkan.
+                            </p>
                         </div>
                     </div>
                 @endforelse
 
                 <!-- Tombol Show More -->
-                <div class="row mt-3">
-                    <div class="col-lg-12 show-more-wrapper mt-5">
-                        <a href="{{ route('organizational-structure.index') }}" class="btn ud-main-btn">
-                            Show More
-                        </a>
-                    </div>
+                <div class="col-lg-12 show-more-wrapper mt-5">
+                    <a href="{{ route('organizational-structure.index') }}" class="btn ud-main-btn">
+                        Show More
+                    </a>
                 </div>
             </div>
 
@@ -566,13 +590,24 @@
                                 </button>
                                 <div id="collapse{{ $key }}" class="accordion-collapse collapse">
                                     <div class="ud-faq-body">
-                                        {{-- sementara deskripsi default --}}
-                                        Layanan ini dapat diakses melalui tautan berikut:
-                                        <a href="{{ $service->link }}" target="_blank" class="text-primary">
-                                            {{ $service->link }}
-                                        </a>
-                                        <br>
-                                        {{ $service->description }}
+                                        {{-- Deskripsi --}}
+                                        <p class="mb-2">
+                                            {!! $service->description !!}
+                                        </p>
+
+                                        {{-- Tombol Akses --}}
+                                        @if (filter_var($service?->link, FILTER_VALIDATE_URL))
+                                            <a href="{{ $service->link }}" target="_blank"
+                                                class="btn btn-primary btn-sm d-inline-flex align-items-center gap-2">
+                                                <i class="ri-external-link-line"></i>
+                                                Akses Layanan
+                                            </a>
+                                        @else
+                                            <button class="btn btn-secondary btn-sm" disabled>
+                                                Link tidak tersedia
+                                            </button>
+                                        @endif
+
                                     </div>
                                 </div>
                             </div>
@@ -755,9 +790,33 @@
                                 <div class="ud-info-icon">
                                     <i class="ri-phone-line"></i>
                                 </div>
+                                @php
+                                    $contact = $about?->phone;
+
+                                    // ambil hanya angka
+                                    $number = preg_replace('/[^0-9]/', '', $contact);
+
+                                    // ubah jika diawali 0 → ganti jadi 62
+                                    if (Str::startsWith($number, '0')) {
+                                        $number = '62' . substr($number, 1);
+                                    }
+
+                                    // pastikan hanya dibuat jika ada isi
+                                    $waLink = !empty($number) ? "https://wa.me/{$number}" : null;
+                                @endphp
+
                                 <div class="ud-info-meta">
                                     <h5>Kontak</h5>
-                                    <p>{{ $about->contact ?? '-' }}</p>
+
+                                    @if ($waLink)
+                                        <p>
+                                            <a href="{{ $waLink }}" class="text-dark" target="_blank">
+                                                {{ $about?->phone }}
+                                            </a>
+                                        </p>
+                                    @else
+                                        <p>-</p>
+                                    @endif
                                 </div>
                             </div>
                             <div class="ud-single-info">
@@ -766,7 +825,8 @@
                                 </div>
                                 <div class="ud-info-meta">
                                     <h5>Instagram</h5>
-                                    <a href="{{ $about->instagram_link ?? '#' }}" target="_blank">
+                                    <a href="{{ filter_var($about?->instagram_link, FILTER_VALIDATE_URL) ? $about->instagram_link : '#' }}"
+                                        target="_blank">
                                         <p>LPP - UPY</p>
                                     </a>
                                 </div>
@@ -799,8 +859,8 @@
 
                             <div class="ud-form-group">
                                 <label for="phone">No - Handphone</label>
-                                <input type="phone" name="phone" id="phone"
-                                    placeholder="082344532233" required />
+                                <input type="phone" name="phone" id="phone" placeholder="082344532233"
+                                    required />
                             </div>
 
                             <div class="ud-form-group">
@@ -824,3 +884,17 @@
     @endpush
 
 </x-landingpage.layout>
+
+<script>
+    window.addEventListener('pageshow', function(event) {
+        if (event.persisted || performance.getEntriesByType("navigation")[0]?.type === "back_forward") {
+            document.querySelectorAll('form').forEach(form => form.reset());
+        }
+    });
+    $(document).on('click', '.see-more-btn', function() {
+        $('#modalTitle').text($(this).data('title'));
+        $('#modalDescription').html($(this).data('description'));
+        $('#modalCategory').text($(this).data('category'));
+        $('#modalDate').text($(this).data('date'));
+    });
+</script>

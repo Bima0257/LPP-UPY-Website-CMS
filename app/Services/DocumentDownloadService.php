@@ -28,7 +28,12 @@ class DocumentDownloadService
      */
     public function verifyPassword($request)
     {
-        $key = 'verify-password:' . $request->ip();
+        $request->validate([
+            'document_id' => 'required|exists:documents,id',
+            'access_password' => 'required|string'
+        ]);
+        
+        $key = 'verify-password:' . $request->ip() . ':' . $request->document_id;
 
         // Rate limit
         if (RateLimiter::tooManyAttempts($key, 5)) {

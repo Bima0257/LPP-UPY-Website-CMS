@@ -6,6 +6,7 @@ use App\Http\Requests\DocumentStoreRequest;
 use App\Http\Requests\DocumentUpdateRequest;
 use App\Models\DocumentCategories;
 use App\Models\Documents;
+use App\Models\User;
 use App\Services\DocumentService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -19,24 +20,23 @@ class DocumentsController extends Controller
     {
         $user = Auth::user();
 
-        // Cache categories (karena selalu dipakai di halaman ini)
         $categories = Cache::remember('admin_document_categories', now()->addMinutes(10), function () {
             return DocumentCategories::all();
         });
 
         if ($user->role === 'superadmin') {
 
-            $cacheKey = 'admin_documents_superadmin';
+            $cacheKey = "documents.superadmin";
 
             $documents = Cache::remember($cacheKey, now()->addMinutes(10), function () {
-                return Documents::all();
+                return Documents::latest('date')->get();
             });
         } else {
 
-            $cacheKey = 'admin_documents_user_' . $user->id;
+            $cacheKey = "documents.user.{$user->id}";
 
             $documents = Cache::remember($cacheKey, now()->addMinutes(10), function () use ($user) {
-                return Documents::where('uploaded_by', $user->id)->get();
+                return Documents::where('uploaded_by', $user->id)->latest('date')->get();
             });
         }
 
@@ -65,7 +65,14 @@ class DocumentsController extends Controller
         $service->store($request->validated());
 
         Cache::forget('latest_documents');
-        Cache::tags(['documents'])->flush();
+        Cache::forget('admin_document_categories');
+        Cache::forget('documents.superadmin');
+        Cache::forget('dashboard.documents');
+        Cache::add('documents_version', 1);
+        Cache::increment('documents_version');
+        foreach (User::pluck('id') as $id) {
+            Cache::forget("documents.user.$id");
+        }
 
         // 7️⃣ Redirect sukses
         return redirect()->route('documents-management.index')
@@ -97,15 +104,18 @@ class DocumentsController extends Controller
         DocumentService $service
     ) {
 
-        $service->update(
-            $documents,
-            array_merge(
-                $request->validated()
-            )
-        );
+        $service->update($documents, $request->validated());
 
         Cache::forget('latest_documents');
-        Cache::flush();
+        Cache::forget('documents.superadmin');
+        Cache::forget('admin_document_categories');
+        Cache::forget('dashboard.documents');
+        Cache::add('documents_version', 1);
+        Cache::increment('documents_version');
+
+        foreach (User::pluck('id') as $id) {
+            Cache::forget("documents.user.$id");
+        }
 
         return redirect()->route('documents-management.index')
             ->with('success', 'Dokumen berhasil diperbarui!');
@@ -119,7 +129,15 @@ class DocumentsController extends Controller
         $service->delete($documents);
 
         Cache::forget('latest_documents');
-        Cache::flush();
+        Cache::forget('documents.superadmin');
+        Cache::forget('admin_document_categories');
+        Cache::forget('dashboard.documents');
+        Cache::add('documents_version', 1);
+        Cache::increment('documents_version');
+
+        foreach (User::pluck('id') as $id) {
+            Cache::forget("documents.user.$id");
+        }
 
         return redirect()->route('documents-management.index')->with('success', 'Documents Telah Di hapus!');
     }

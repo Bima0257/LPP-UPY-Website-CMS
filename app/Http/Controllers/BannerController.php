@@ -14,7 +14,7 @@ class BannerController extends Controller
     {
         $title = 'Banner Setting';
         $banner = Banner::first();
-        
+
         if (!$banner) {
             $banner = Banner::create([
                 'banner_background' => null,
@@ -27,8 +27,6 @@ class BannerController extends Controller
     public function edit($id)
     {
         $banner = Banner::findOrFail($id);
-        Cache::forget('banner');
-        Cache::forget('banner_footer');
         return response()->json($banner);
     }
 
@@ -63,7 +61,9 @@ class BannerController extends Controller
             $validated['footer_background'] = $request->file('footer_background')->store('banners', 'public');
         }
 
-        $banner->update($validated);
+        if (!empty($validated)) {
+            $banner->update($validated);
+        }
 
         Cache::forget('banner');
         Cache::forget('banner_footer');

@@ -21,6 +21,7 @@
                                 <th>Judul Dokumen</th>
                                 <th>Kategori</th>
                                 <th>Upload By</th>
+                                <th>Tanggal</th>
                                 <th>Tipe File</th>
                                 <th>Status</th>
                                 <th>Proteksi</th>
@@ -35,6 +36,9 @@
                                     <td>{{ $document->title }}</td>
                                     <td>{{ $document->category->name ?? '-' }}</td>
                                     <td>{{ $document->author->name ?? '-' }}</td>
+                                    <td data-order="{{ \Carbon\Carbon::parse($document->date)->format('Y-m-d') }}">
+                                        {{ \Carbon\Carbon::parse($document->date)->format('d M Y') }}
+                                    </td>
                                     <td>{{ $document->file_extension }}</td>
                                     <td>
                                         @if ($document->is_published)
@@ -150,6 +154,17 @@
 
                             <div class="col-md-6">
 
+                                {{-- Tanggal Pelaksanaan --}}
+                                <div class="mb-3">
+                                    <label for="date" class="col-form-label">Tanggal Dokumen</label>
+                                    <input type="date" name="date" id="date"
+                                        class="form-control @error('date') is-invalid @enderror"
+                                        value="{{ old('date') }}" required>
+                                    @error('date')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
 
                                 {{-- Upload File --}}
                                 <div class="mb-3">
@@ -163,7 +178,7 @@
                                     <input type="file" name="file_path" id="file_path"
                                         class="form-control @error('file_path') is-invalid @enderror"
                                         accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip,.rar">
-                                    <small class="text-muted">Format: PDF, DOCX, XLSX, PPTX, ZIP, max 10MB</small>
+                                    <small class="text-muted">Format: PDF, DOCX, XLSX, PPTX, ZIP, max 100MB</small>
                                     @error('file_path')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -320,10 +335,14 @@
             $.ajax({
                 url: '/documents-management/' + id + '/edit',
                 type: 'GET',
+                beforeSend: function() {
+                    showLoading('Memproses...');
+                },
                 success: function(data) {
                     // Isi form dengan data dokumen
                     $('#title').val(data.title);
                     $('#category_id').val(data.category_id);
+                    $('#date').val(data.date);
                     if (tinymce.get('description')) {
                         tinymce.get('description').setContent(data.description || '');
                     }

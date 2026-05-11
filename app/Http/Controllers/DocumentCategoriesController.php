@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\DocumentCategories;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 
@@ -17,7 +18,7 @@ class DocumentCategoriesController extends Controller
     {
         return view('admin.documents.categories', [
             'title' => 'Document Categories',
-            'categories' => DocumentCategories::all()
+            'categories' => DocumentCategories::orderBy('sort_order')->get()
         ]);
     }
 
@@ -49,14 +50,21 @@ class DocumentCategoriesController extends Controller
                 ->with('form_error', true);
         }
 
-        $lastOrder = DocumentCategories::max('sort_order') ?? 0;
+        DB::transaction(function () use ($request) {
 
-        DocumentCategories::create([
-            'name' => $request->name,
-            'description' => $request->description,
-            'sort_order' => $lastOrder + 1,
-            'is_published' => $request->is_published,
-        ]);
+            $lastOrder = DocumentCategories::lockForUpdate()->max('sort_order') ?? 0;
+
+            DocumentCategories::create([
+                'name' => $request->name,
+                'description' => $request->description,
+                'sort_order' => $lastOrder + 1,
+                'is_published' => $request->is_published,
+            ]);
+        });
+
+        Cache::forget('document_categories');
+        Cache::forget('document_categories_footer');
+        Cache::forget('dashboard.doc_categories');
 
         // 6️⃣ Redirect sukses
         return redirect()->route('documents-categories.index')
@@ -102,6 +110,7 @@ class DocumentCategoriesController extends Controller
         $documentCategories->update($validator->validated());
         Cache::forget('document_categories');
         Cache::forget('document_categories_footer');
+        Cache::forget('dashboard.doc_categories');
 
         return redirect()->route('documents-categories.index')
             ->with('success', 'Kategori dokumen berhasil diperbarui!');
@@ -112,24 +121,32 @@ class DocumentCategoriesController extends Controller
      */
     public function destroy(DocumentCategories $documentCategories)
     {
+        $deletedOrder = $documentCategories->sort_order;
+
         $documentCategories->delete();
 
-        $categories = DocumentCategories::orderBy('sort_order')->get();
-        foreach ($categories as $index => $category) {
-            $category->update(['sort_order' => $index + 1]);
-        }
+        DocumentCategories::where('sort_order', '>', $deletedOrder)
+            ->decrement('sort_order');
 
         Cache::forget('document_categories');
         Cache::forget('document_categories_footer');
+        Cache::forget('dashboard.doc_categories');
 
         return redirect('/documents-categories')->with('success', 'Kategori Dokumen Telah Di hapus!');
     }
 
     public function updateOrder(Request $request)
     {
-        foreach ($request->order as $index => $id) {
-            DocumentCategories::where('id', $id)->update(['sort_order' => $index + 1]);
-        }
+        DB::transaction(function () use ($request) {
+            foreach ($request->order as $index => $id) {
+                DocumentCategories::where('id', $id)
+                    ->update(['sort_order' => $index + 1]);
+            }
+        });
+
+        Cache::forget('document_categories');
+        Cache::forget('document_categories_footer');
+        Cache::forget('dashboard.doc_categories');
 
         return response()->json(['success' => true]);
     }

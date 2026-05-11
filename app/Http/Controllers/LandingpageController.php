@@ -29,33 +29,33 @@ class LandingpageController extends Controller
 
         $title = 'Home';
 
-        $carousels = Cache::remember('carousels', 60 * 60, function () {
-            return Carousels::where('is_published', 1)->get();
+        $carousels = Cache::remember('carousels', now()->addMinutes(10), function () {
+            return Carousels::where('is_published', 1)->orderBy('sort_order', 'asc')->get();
         });
 
-        $about = Cache::remember('about', 60 * 60, function () {
+        $about = Cache::remember('about', now()->addMinutes(10), function () {
             return Abouts::first();
         });
 
-        $posts = Cache::remember('latest_posts', 60 * 60, function () {
+        $posts = Cache::remember('latest_posts', now()->addMinutes(10), function () {
             return Posts::with('author', 'category')
                 ->where('is_published', 1)
-                ->latest()
-                ->take(8)
+                ->latest('date')
+                ->take(9)
                 ->get();
         });
-        
 
 
-        $documents = Cache::remember('latest_documents', 60 * 60, function () {
-            return Documents::with('category')->where('is_published', 1)->latest()->take(4)->get();
+
+        $documents = Cache::remember('latest_documents', now()->addMinutes(10), function () {
+            return Documents::with('category')->where('is_published', 1)->latest('date')->take(4)->get();
         });
 
-        $members = Cache::remember('members', 60 * 60, function () {
+        $members = Cache::remember('members', now()->addMinutes(10), function () {
             return Member::take(4)->orderBy('sort_order', 'asc')->get();
         });
 
-        $services = Cache::remember('services', 60 * 60, function () {
+        $services = Cache::remember('services', now()->addMinutes(10), function () {
             return Service::take(6)->latest()->get();
         });
 

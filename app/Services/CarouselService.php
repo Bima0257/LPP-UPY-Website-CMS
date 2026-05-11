@@ -6,6 +6,7 @@ use App\Models\Carousels;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class CarouselService
 {
@@ -24,16 +25,22 @@ class CarouselService
     /** Store Carousel */
     public function store(array $data): Carousels
     {
-        $imagePath = $this->uploadFoto($data['image'] ?? null);
+        return DB::transaction(function () use ($data) {
 
-        return Carousels::create([
-            'title'          => $data['title'],
-            'description'    => $data['description'] ?? null,
-            'btn_link'       => $data['btn_link'] ?? null,
-            'image'          => $imagePath,
-            'is_published'   => $data['is_published'],
-            'author_id'      => Auth::id(),
-        ]);
+            $imagePath = $this->uploadFoto($data['image'] ?? null);
+
+            $lastOrder = Carousels::lockForUpdate()->max('sort_order') ?? 0;
+
+            return Carousels::create([
+                'title'          => $data['title'],
+                'description'    => $data['description'] ?? null,
+                'btn_link'       => $data['btn_link'] ?? null,
+                'image'          => $imagePath,
+                'sort_order'     => $lastOrder + 1,
+                'is_published'   => $data['is_published'],
+                'author_id'      => Auth::id(),
+            ]);
+        });
     }
 
     /** Update Carousel */
@@ -41,7 +48,6 @@ class CarouselService
     {
         $newImagePath = $this->uploadFoto($data['image'] ?? null);
 
-        // Hapus gambar lama bila ada upload baru
         if ($newImagePath && $carousel->image) {
             Storage::disk('public')->delete($carousel->image);
         }
@@ -50,7 +56,7 @@ class CarouselService
             'title'          => $data['title'],
             'description'    => $data['description'] ?? null,
             'btn_link'       => $data['btn_link'] ?? null,
-            'image'          => $newImagePath ? $newImagePath : $carousel->image,
+            'image'          => $newImagePath ?? $carousel->image,
             'is_published'   => $data['is_published'],
         ]);
 
@@ -60,10 +66,34 @@ class CarouselService
     /** Delete Carousel */
     public function delete(Carousels $carousel): bool
     {
-        if ($carousel->image && Storage::disk('public')->exists($carousel->image)) {
-            Storage::disk('public')->delete($carousel->image);
-        }
+        return DB::transaction(function () use ($carousel) {
 
-        return $carousel->delete();
+            $deletedOrder = $carousel->sort_order;
+
+            if ($carousel->image && Storage::disk('public')->exists($carousel->image)) {
+                Storage::disk('public')->delete($carousel->image);
+            }
+
+            $carousel->delete();
+
+            // rapihin urutan
+            Carousels::where('sort_order', '>', $deletedOrder)
+                ->decrement('sort_order');
+
+            return true;
+        });
+    }
+
+    public function updateOrder(array $orders): bool
+    {
+        return DB::transaction(function () use ($orders) {
+
+            foreach ($orders as $index => $id) {
+                Carousels::where('id', $id)
+                    ->update(['sort_order' => $index + 1]);
+            }
+
+            return true;
+        });
     }
 }

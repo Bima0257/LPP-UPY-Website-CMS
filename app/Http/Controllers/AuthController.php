@@ -26,31 +26,20 @@ class AuthController extends Controller
     {
         // Validasi input
         $credentials = $request->validate([
-            'username' => 'required',
-            'password' => 'required'
+            'username' => 'required|string',
+            'password' => 'required|string'
         ]);
 
-        // Rate limiting - maksimal 5 percobaan per 1 menit
-        $key = 'login.' . $request->ip();
-        $maxAttempts = 5;
-        $decayMinutes = 1;
+        $key = 'login.' . $request->username . '|' . $request->ip();
 
-        if (RateLimiter::tooManyAttempts($key, $maxAttempts)) {
+        if (RateLimiter::tooManyAttempts($key, 5)) {
             $seconds = RateLimiter::availableIn($key);
-            return back()->with('loginError', "Terlalu banyak percobaan login. Silakan coba lagi dalam {$seconds} detik.");
+            return back()->with('loginError', "Terlalu banyak percobaan login. Coba lagi dalam {$seconds} detik.");
         }
 
         if (!Auth::attempt($credentials)) {
-            // Tambahkan hit ke rate limiter saat login gagal
-            RateLimiter::hit($key, $decayMinutes * 60);
-
-            $attemptsLeft = $maxAttempts - RateLimiter::attempts($key);
-
-            if ($attemptsLeft > 0) {
-                return back()->with('loginError', "Username atau password salah!");
-            } else {
-                return back()->with('loginError', 'Terlalu banyak percobaan login. Akun diblokir sementara.');
-            }
+            RateLimiter::hit($key, 60);
+            return back()->with('loginError', 'Username atau password salah!');
         }
 
         // Clear rate limiter saat login berhasil
@@ -58,41 +47,23 @@ class AuthController extends Controller
 
         $user = Auth::user();
 
-        // Hapus sesi expired sebelum cek session lain
-        DB::table('sessions')
-            ->where('last_activity', '<', now()->subMinutes(config('session.lifetime'))->timestamp)
-            ->delete();
-
-        // Regenerate session untuk keamanan
         $request->session()->regenerate();
 
-        // Update session milik user ini
         DB::table('sessions')
             ->where('id', session()->getId())
-            ->update([
-                'user_id' => $user->id,
-            ]);
+            ->update(['user_id' => $user->id]);
 
-        // Cek apakah ada session lain aktif selain session ini
-        $activeSession = DB::table('sessions')
+
+        DB::table('sessions')
             ->where('user_id', $user->id)
             ->where('id', '!=', session()->getId())
-            ->first();
+            ->delete();
 
-        if ($activeSession) {
-            Auth::logout();
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
 
-            return back()->with('loginError', 'Akun ini sedang digunakan pada perangkat lain!');
-        }
-
-        // Cek role
         if (in_array($user->role, ['admin', 'superadmin'])) {
             return redirect()->intended('/dashboard');
         }
 
-        // Logout jika bukan role yang diizinkan
         Auth::logout();
         return redirect('/login')->with('loginError', 'Anda tidak memiliki akses!');
     }

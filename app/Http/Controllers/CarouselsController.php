@@ -6,7 +6,9 @@ use App\Models\Carousels;
 use App\Http\Requests\StoreCarouselRequest;
 use App\Http\Requests\UpdateCarouselRequest;
 use App\Services\CarouselService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class CarouselsController extends Controller
 {
@@ -21,7 +23,7 @@ class CarouselsController extends Controller
     {
         return view('admin.carousels.index', [
             'title' => 'Carousels Managements',
-            'carousels' => Carousels::with('author')->get()
+            'carousels' => Carousels::with('author')->latest()->get()
         ]);
     }
 
@@ -38,11 +40,12 @@ class CarouselsController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreCarouselRequest $request, CarouselService $service)
+    public function store(StoreCarouselRequest $request)
     {
-        $service->store($request->validated());
+        $this->service->store($request->validated());
 
         Cache::forget('carousels');
+        Cache::forget('dashboard.carousel');
 
         return redirect()->route('carousels-management.index')
             ->with('success', 'Carousel baru berhasil ditambahkan!');
@@ -73,6 +76,7 @@ class CarouselsController extends Controller
         $this->service->update($carousels, $request->validated());
 
         Cache::forget('carousels');
+        Cache::forget('dashboard.carousel');
 
         return redirect()->route('carousels-management.index')
             ->with('success', 'Carousel berhasil diperbarui!');
@@ -86,8 +90,19 @@ class CarouselsController extends Controller
         $this->service->delete($carousels);
 
         Cache::forget('carousels');
+        Cache::forget('dashboard.carousel');
 
         return redirect()->route('carousels-management.index')
             ->with('success', 'Carousel telah dihapus!');
+    }
+
+    public function reorder(Request $request)
+    {
+        $this->service->updateOrder($request->order);
+
+        Cache::forget('carousels');
+        Cache::forget('dashboard.carousel');
+
+        return response()->json(['success' => true]);
     }
 }

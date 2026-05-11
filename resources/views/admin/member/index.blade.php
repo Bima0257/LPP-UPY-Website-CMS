@@ -170,7 +170,7 @@
                                 <!-- Instagram -->
                                 <div class="mb-3">
                                     <label for="instagram_link" class="form-label">Instagram</label>
-                                    <input type="url" name="instagram_link" id="instagram_link"
+                                    <input type="text" name="instagram_link" id="instagram_link"
                                         class="form-control @error('instagram_link') is-invalid @enderror"
                                         placeholder="https://instagram.com/username"
                                         value="{{ old('instagram_link') }}">
@@ -182,7 +182,7 @@
                                 <!-- LinkedIn -->
                                 <div class="mb-3">
                                     <label for="linkedin_link" class="form-label">LinkedIn</label>
-                                    <input type="url" name="linkedin_link" id="linkedin_link"
+                                    <input type="text" name="linkedin_link" id="linkedin_link"
                                         class="form-control @error('linkedin_link') is-invalid @enderror"
                                         placeholder="https://linkedin.com/in/username"
                                         value="{{ old('linkedin_link') }}">
@@ -194,7 +194,7 @@
                                 <!-- Facebook -->
                                 <div class="mb-3">
                                     <label for="facebook_link" class="form-label">Facebook</label>
-                                    <input type="url" name="facebook_link" id="facebook_link"
+                                    <input type="text" name="facebook_link" id="facebook_link"
                                         class="form-control @error('facebook_link') is-invalid @enderror"
                                         placeholder="https://facebook.com/username"
                                         value="{{ old('facebook_link') }}">

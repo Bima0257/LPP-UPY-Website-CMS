@@ -8,7 +8,6 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DocumentCategoriesController;
 use App\Http\Controllers\DocumentLandingpageController;
 use App\Http\Controllers\DocumentsController;
-use App\Http\Controllers\GalleriesController;
 use App\Http\Controllers\LandingpageController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\MenuController;
@@ -69,12 +68,16 @@ Route::get('/program-kerja', [LandingpageController::class, 'timeline'])->name('
 
 // route service
 Route::get('/service', function () {
-    $services = Service::all();
+    $services = Service::latest()->get();
     $title = 'Semua Layanan';
 
     return view('landingpage.semua-service', compact('services', 'title'));
 });
 // route service end
+
+Route::fallback(function () {
+    abort(404);
+});
 
 
 
@@ -99,6 +102,8 @@ Route::middleware(['admin.auth'])->group(function () {
 
 
         // Carousels Management Routes
+        Route::post('/carousels-management/reorder', [CarouselsController::class, 'reorder'])
+            ->name('carousels-management.reorder');
         Route::resource('carousels-management', CarouselsController::class)
             ->parameters(['carousels-management' => 'carousels']);
         // Carousels Management Routes End

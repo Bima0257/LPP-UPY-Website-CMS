@@ -34,7 +34,7 @@
                                                 </li>
                                                 <li>
                                                     <i class="ri-phone-line text-primary me-1"></i>
-                                                    {{ $about->phone ?? '-' }}
+                                                    {{ $about?->phone ?? '-' }}
                                                 </li>
                                                 <li>
                                                     <i class="ri-instagram-line text-danger me-1"></i>
@@ -185,7 +185,7 @@
                                                         <label for="phone" class="form-label">Telepon</label>
                                                         <input type="text" name="phone"
                                                             class="form-control @error('phone') is-invalid @enderror"
-                                                            value="{{ old('phone', $about->phone) }}">
+                                                            value="{{ old('phone', $about?->phone) }}">
                                                         @error('phone')
                                                             <div class="invalid-feedback">{{ $message }}</div>
                                                         @enderror
@@ -197,7 +197,7 @@
                                                     <div class="col-md-6 mb-3">
                                                         <label for="instagram_link"
                                                             class="form-label">Instagram</label>
-                                                        <input type="url" name="instagram_link"
+                                                        <input type="string" name="instagram_link"
                                                             id="instagram_link"
                                                             class="form-control @error('instagram_link') is-invalid @enderror"
                                                             placeholder="https://www.instagram.com/nama_akun"
@@ -208,7 +208,7 @@
                                                     </div>
                                                     <div class="col-md-6 mb-3">
                                                         <label for="youtube_link" class="form-label">YouTube</label>
-                                                        <input type="url" name="youtube_link" id="youtube_link"
+                                                        <input type="string" name="youtube_link" id="youtube_link"
                                                             class="form-control @error('youtube_link') is-invalid @enderror"
                                                             placeholder="https://www.youtube.com/@nama_channel"
                                                             value="{{ old('youtube_link', $about->youtube_link) }}">

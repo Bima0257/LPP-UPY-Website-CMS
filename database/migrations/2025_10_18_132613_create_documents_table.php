@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('documents', function (Blueprint $table) {
             $table->id();
             $table->string('title', 255);
+            $table->date('date');
             $table->string('slug', 255)->unique();
             $table->text('description')->nullable();
             $table->string('file_path', 255);

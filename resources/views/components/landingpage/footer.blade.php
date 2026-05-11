@@ -15,13 +15,15 @@
                         </div>
                         <ul class="list-unstyled text-white">
                             <li class="mb-2">
-                                <a href="{{ $about->youtube_link ?? '#' }}" class="text-white" target="_blank">
+                                <a href="{{ filter_var($about?->youtube_link, FILTER_VALIDATE_URL) ? $about->youtube_link : '#' }}"
+                                    class="text-white" target="_blank">
                                     <i class="mdi mdi-youtube me-2"></i>
                                     LPP-UPY
                                 </a>
                             </li>
                             <li class="mb-2">
-                                <a href="{{ $about->instagram_link ?? '#' }}" class="text-white" target="_blank">
+                                <a href="{{ filter_var($about?->instagram_link, FILTER_VALIDATE_URL) ? $about->instagram_link : '#' }}"
+                                    class="text-white" target="_blank">
                                     <i class="mdi mdi-instagram me-2"></i>
                                     LPP-UPY
                                 </a>
@@ -30,9 +32,30 @@
                                 <i class="mdi mdi-email-outline me-2 text-white"></i>
                                 {{ $about->email ?? 'info@example.com' }}
                             </li>
+
+                            @php
+                                $contact = $about?->phone;
+
+                                // ambil hanya angka
+                                $number = preg_replace('/[^0-9]/', '', $contact);
+
+                                // ubah jika diawali 0 → ganti jadi 62
+                                if (Str::startsWith($number, '0')) {
+                                    $number = '62' . substr($number, 1);
+                                }
+
+                                // pastikan hanya dibuat jika ada isi
+                                $waLink = !empty($number) ? "https://wa.me/{$number}" : null;
+                            @endphp
                             <li class="mb-2">
                                 <i class="mdi mdi-phone-outline me-2 text-white"></i>
-                                {{ $about->phone ?? '+62 812-3456-7890' }}
+                                @if ($waLink)
+                                    <a href="{{ $waLink }}" class="text-white" target="_blank">
+                                        {{ $about?->phone }}
+                                    </a>
+                                @else
+                                    <p class="text-white">-</p>
+                                @endif
                             </li>
 
                         </ul>

@@ -24,10 +24,11 @@ class DocumentStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title'          => 'required|string|max:255|unique:documents',
+            'title'          => 'required|string|max:255',
+            'date' => 'required|date',
             'category_id'    => 'nullable|exists:document_categories,id',
             'description'    => 'nullable|string|max:5000',
-            'file_path'      => 'required|file|max:10240',
+            'file_path'      => 'required|file|max:100000', // Max file size in kilobytes (100 MB)
             'is_published'   => 'required|boolean',
             'is_protected'   => 'boolean',
             'access_password' => 'nullable|string|min:6|max:255',

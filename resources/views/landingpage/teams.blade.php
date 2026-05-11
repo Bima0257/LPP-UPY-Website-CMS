@@ -5,10 +5,12 @@
         style="background-image: url('{{ !empty($banner) && !empty($banner->banner_background)
             ? asset('storage/' . $banner->banner_background)
             : asset('assets/images/background/background-default.jpg') }}');">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="ud-banner-content">
-                    <h1>Struktur Organisasi</h1>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="ud-banner-content">
+                        <h1>Struktur Organisasi</h1>
+                    </div>
                 </div>
             </div>
         </div>
@@ -47,18 +49,29 @@
                                 <h6>{{ $member->divisi }}</h6>
                             </div>
                             <ul class="ud-team-socials">
-                                <li>
-                                    <a href="{{ $member->facebook_link }}" target="_blank"><i
-                                            class="lni lni-facebook-filled"></i></a>
-                                </li>
-                                <li>
-                                    <a href="{{ $member->linkedin_link }}" target="_blank"><i
-                                            class="lni lni-linkedin-original"></i></a>
-                                </li>
-                                <li>
-                                    <a href="{{ $member->instagram_link }}" target="_blank"><i
-                                            class="lni lni-instagram-filled"></i></a>
-                                </li>
+                                @if (!empty($member->facebook_link) && filter_var($member?->facebook_link, FILTER_VALIDATE_URL))
+                                    <li>
+                                        <a href="{{ $member->facebook_link }}" target="_blank">
+                                            <i class="lni lni-facebook-filled"></i>
+                                        </a>
+                                    </li>
+                                @endif
+
+                                @if (!empty($member->linkedin_link) && filter_var($member?->linkedin_link, FILTER_VALIDATE_URL))
+                                    <li>
+                                        <a href="{{ $member->linkedin_link }}" target="_blank">
+                                            <i class="lni lni-linkedin-original"></i>
+                                        </a>
+                                    </li>
+                                @endif
+
+                                @if (!empty($member->instagram_link) && filter_var($member?->instagram_link, FILTER_VALIDATE_URL))
+                                    <li>
+                                        <a href="{{ $member->instagram_link }}" target="_blank">
+                                            <i class="lni lni-instagram-filled"></i>
+                                        </a>
+                                    </li>
+                                @endif
                             </ul>
                         </div>
                     </div>

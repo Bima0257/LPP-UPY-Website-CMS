@@ -5,10 +5,12 @@
         style="background-image: url('{{ !empty($banner) && !empty($banner->banner_background)
             ? asset('storage/' . $banner->banner_background)
             : asset('assets/images/background/background-default.jpg') }}');">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="ud-banner-content">
-                    <h1>Semua Layanan</h1>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="ud-banner-content">
+                        <h1>Semua Layanan</h1>
+                    </div>
                 </div>
             </div>
         </div>
@@ -50,13 +52,23 @@
                                 </button>
                                 <div id="collapse{{ $key }}" class="accordion-collapse collapse">
                                     <div class="ud-faq-body">
-                                        {{-- sementara deskripsi default --}}
-                                        Layanan ini dapat diakses melalui tautan berikut:
-                                        <a href="{{ $service->link }}" target="_blank" class="text-primary">
-                                            {{ $service->link }}
-                                        </a>
-                                        <br>
-                                        {{ $service->description }}
+                                        {{-- Deskripsi --}}
+                                        <p class="mb-2">
+                                            {!! $service->description !!}
+                                        </p>
+
+                                        {{-- Tombol Akses --}}
+                                        @if (filter_var($service?->link, FILTER_VALIDATE_URL))
+                                            <a href="{{ $service->link }}" target="_blank"
+                                                class="btn btn-primary btn-sm d-inline-flex align-items-center gap-2">
+                                                <i class="ri-external-link-line"></i>
+                                                Akses Layanan
+                                            </a>
+                                        @else
+                                            <button class="btn btn-secondary btn-sm" disabled>
+                                                Link tidak tersedia
+                                            </button>
+                                        @endif
                                     </div>
                                 </div>
                             </div>

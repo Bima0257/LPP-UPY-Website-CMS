@@ -5,13 +5,14 @@
         style="background-image: url('{{ !empty($banner) && !empty($banner->banner_background)
             ? asset('storage/' . $banner->banner_background)
             : asset('assets/images/background/background-default.jpg') }}');">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="ud-banner-content">
-                    <h1>{{ $title }}</h1>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="ud-banner-content">
+                        <h1>{{ $title }}</h1>
+                    </div>
                 </div>
             </div>
-        </div>
         </div>
     </section>
     <!-- ====== Banner End ====== -->

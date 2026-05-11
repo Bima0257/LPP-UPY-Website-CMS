@@ -27,8 +27,8 @@ class StoreCarouselRequest extends FormRequest
         return [
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'image' => 'nullable|image|file|mimes:jpeg,png,jpg|max:1000',
-            'btn_link'  => 'nullable|url|max:150',
+            'image' => 'nullable|image|file|mimes:jpeg,png,jpg|max:5000',
+            'btn_link'  => 'nullable|string|max:150',
             'is_published' => 'required|boolean',
         ];
     }

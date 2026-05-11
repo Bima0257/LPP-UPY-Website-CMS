@@ -73,6 +73,18 @@
 
                             {{-- Kolom kanan --}}
                             <div class="col-md-6">
+
+                                {{-- Tanggal Pelaksanaan --}}
+                                <div class="mb-3">
+                                    <label for="date" class="col-form-label">Tanggal Dokumen</label>
+                                    <input type="date" name="date" id="date"
+                                        class="form-control @error('date') is-invalid @enderror"
+                                        value="{{ old('date', $post->date) }}" required>
+                                    @error('date')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
                                 {{-- Thumbnail --}}
                                 <label for="thumbnail" class="col-form-label">Thumbnail</label>
                                 <div class="mb-3">

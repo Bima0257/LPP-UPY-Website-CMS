@@ -27,10 +27,10 @@ class UpdateMemberRequest extends FormRequest
         return [
             'nama' => 'required|string|max:150',
             'divisi' => 'required|string|max:100',
-            'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:1000',
-            'instagram_link' => 'nullable|url|max:255',
-            'linkedin_link' => 'nullable|url|max:255',
-            'facebook_link' => 'nullable|url|max:255',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:5000',
+            'instagram_link' => 'nullable|string|max:255',
+            'linkedin_link' => 'nullable|string|max:255',
+            'facebook_link' => 'nullable|string|max:255',
         ];
     }
 

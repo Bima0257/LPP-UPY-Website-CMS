@@ -31,7 +31,10 @@
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
                                     <td>{{ $proker->name }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($proker->tgl_pelaksanaan)->format('d M Y') }}</td>
+                                    <td
+                                        data-order="{{ \Carbon\Carbon::parse($proker->tgl_pelaksanaan)->format('Y-m-d') }}">
+                                        {{ \Carbon\Carbon::parse($proker->tgl_pelaksanaan)->format('d M Y') }}
+                                    </td>
                                     <td>
                                         @if ($proker->is_published)
                                             <span class="badge bg-success">Published</span>

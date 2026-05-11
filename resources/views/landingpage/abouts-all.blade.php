@@ -48,15 +48,17 @@
                             </li>
                             <li class="mb-2">
                                 <i class="ri-phone-fill me-2 text-primary"></i>
-                                {{ $about->phone ?? 'Telepon belum diisi' }}
+                                {{ $about?->phone ?? 'Telepon belum diisi' }}
                             </li>
                             <li class="mb-2">
                                 <i class="ri-instagram-fill me-2 text-primary"></i>
-                                <a href="{{ $about->instagram_link ?? '#' }}" target="_blank">LPP - UPY</a>
+                                <a href="{{ filter_var($about?->instagram_link, FILTER_VALIDATE_URL) ? $about->instagram_link : '#' }}"
+                                    target="_blank">LPP - UPY</a>
                             </li>
                             <li class="mb-2">
                                 <i class="ri-youtube-fill me-2 text-danger"></i>
-                                <a href="{{ $about->youtube_link ?? '#' }}" target="_blank">LPP - UPY</a>
+                                <a href="{{ filter_var($about?->youtube_link, FILTER_VALIDATE_URL) ? $about->youtube_link : '#' }}"
+                                    target="_blank">LPP - UPY</a>
                             </li>
                         </ul>
                     </div>

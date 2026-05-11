@@ -31,7 +31,7 @@ class UserStoreRequest extends FormRequest
             'password' => 'required|string|min:8',
             'confirm_password' => 'required|string|min:8|same:password',
             'role' => ['required', Rule::in(['admin', 'superadmin'])],
-            'avatar' => 'nullable|image|file|mimes:jpeg,png,jpg|max:1000',
+            'avatar' => 'nullable|image|file|mimes:jpeg,png,jpg|max:5000',
             'confirm_password.same' => 'Konfirmasi password tidak cocok!'
         ];
     }

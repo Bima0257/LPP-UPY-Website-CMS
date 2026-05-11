@@ -250,8 +250,8 @@
         // 📊 Chart Dokumen
         createPieChart(
             "#doc_chart",
-            @json($totalDocuments),
-            @json($documentCategories),
+            @json($documentCategoryData['totals']),
+            @json($documentCategoryData['categories']),
             "Total Dokumen Berdasarkan Kategori",
             "dokumen"
         );
@@ -259,8 +259,8 @@
         // 📰 Chart Artikel
         createPieChart(
             "#post_chart",
-            @json($totalPosts),
-            @json($postCategories),
+            @json($postCategoryData['totals']),
+            @json($postCategoryData['categories']),
             "Jumlah Artikel Berdasarkan Kategori",
             "artikel"
         );

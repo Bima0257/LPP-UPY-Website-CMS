@@ -52,15 +52,15 @@ class AboutsController extends Controller
             'vision'      => 'nullable|string',
             'mission'     => 'nullable|string',
             'purpose'     => 'nullable|string',
-            'thumbnail'   => 'nullable|image|mimes:jpeg,png,jpg|max:1024',
-            'image'       => 'nullable|image|mimes:jpeg,png,jpg|max:1024',
-            'favicon'  => 'nullable|image|mimes:jpeg,png,jpg|max:1024',
-            'white_logo'  => 'nullable|image|mimes:jpeg,png,jpg|max:1024',
-            'black_logo'  => 'nullable|image|mimes:jpeg,png,jpg|max:1024',
+            'thumbnail'   => 'nullable|image|mimes:jpeg,png,jpg|max:5000',
+            'image'       => 'nullable|image|mimes:jpeg,png,jpg|max:5000',
+            'favicon'  => 'nullable|image|mimes:jpeg,png,jpg|max:5000',
+            'white_logo'  => 'nullable|image|mimes:jpeg,png,jpg|max:5000',
+            'black_logo'  => 'nullable|image|mimes:jpeg,png,jpg|max:5000',
             'address'     => 'nullable|string',
             'email'       => 'nullable|email|max:150',
-            'instagram_link'       => 'nullable|url|max:255',
-            'youtube_link'       => 'nullable|url|max:255',
+            'instagram_link'       => 'nullable|string|max:255',
+            'youtube_link'       => 'nullable|string|max:255',
             'phone'       => 'nullable|string|max:50',
         ]);
 
@@ -106,6 +106,7 @@ class AboutsController extends Controller
         Cache::forget('about_favicon');
         Cache::forget('about_logo');
         Cache::forget('about_footer');
+        Cache::forget('about_navbar');
         Cache::forget('about');
 
         // 7️⃣ Redirect sukses

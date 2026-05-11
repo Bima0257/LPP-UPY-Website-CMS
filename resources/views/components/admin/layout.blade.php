@@ -7,6 +7,8 @@
     <meta charset="utf-8" />
     <title>{{ $title ?? 'Web LPP' }}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="flash-success" content="{{ session('success') }}">
+    <meta name="flash-error" content="{{ session('error') }}">
     <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
     <meta content="Themesdesign" name="author" />
     <!-- App favicon -->
@@ -126,6 +128,23 @@
 
 
     <script>
+        let isBackForward = false;
+        let hasShown = false;
+
+        if (performance.getEntriesByType) {
+            const nav = performance.getEntriesByType("navigation")[0];
+            if (nav && nav.type === "back_forward") {
+                isBackForward = true;
+            }
+        }
+
+        // fallback untuk browser lama
+        if (window.performance && window.performance.navigation) {
+            if (window.performance.navigation.type === 2) {
+                isBackForward = true;
+            }
+        }
+
         setInterval(() => {
             fetch('/heartbeat');
         }, 180000); // 3 menit
@@ -207,49 +226,56 @@
         $(document).ready(function() {
             $('#datatable').DataTable();
 
-            @if ($errors->any())
+            const success = document.querySelector('meta[name="flash-success"]')?.content;
+            const error = document.querySelector('meta[name="flash-error"]')?.content;
 
+            function showLoading(message = 'Memproses...') {
+                Swal.fire({
+                    title: message,
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+            }
+
+            function showSuccess(message) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: message,
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'OK'
+                });
+            }
+
+            function showError(message) {
                 Swal.fire({
                     icon: 'error',
-                    title: 'Validasi Gagal',
-                    html: `
-        <div style="text-align:left;">
-            @foreach ($errors->all() as $error)
-                <p class="text-danger text-center">{{ $error }}</p>
-            @endforeach
-        </div>
-        `
+                    title: 'Error!',
+                    text: message,
+                    confirmButtonColor: '#d33',
+                    confirmButtonText: 'OK'
                 });
-            @endif
+            }
 
-            // sweet allert
-            @if (session('success'))
-                const messageId = 'success_message_{{ time() }}';
-                if (!sessionStorage.getItem(messageId)) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success!',
-                        text: '{{ session('success') }}',
-                        confirmButtonColor: '#3085d6',
-                        confirmButtonText: 'OK'
-                    });
-                    sessionStorage.setItem(messageId, '1');
-                }
-            @endif
 
-            @if (session('error'))
-                const messageId = 'success_message_{{ time() }}';
-                if (!sessionStorage.getItem(messageId)) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error!',
-                        text: '{{ session('error') }}',
-                        confirmButtonColor: '#d33',
-                        confirmButtonText: 'OK'
-                    });
-                    sessionStorage.setItem(messageId, '1');
-                }
-            @endif
+            if (success && !isBackForward && !hasShown) {
+                hasShown = true;
+                showLoading('Memproses data...');
+                setTimeout(() => {
+                    Swal.close();
+                    showSuccess(success);
+                }, 800);
+            }
+
+            if (error && !isBackForward && !hasShown) {
+                showLoading('Memproses...');
+                setTimeout(() => {
+                    Swal.close();
+                    showError(error);
+                }, 800);
+            }
 
             $(document).on('click', '.delete-btn', function(e) {
                 e.preventDefault(); // cegah aksi default
@@ -304,10 +330,10 @@
                     return;
                 }
 
-                if (file.size > 1 * 1024 * 1024) {
+                if (file.size > 5 * 1000 * 1000) {
                     Swal.fire({
                         icon: 'warning',
-                        title: 'Ukuran file maksimal 1MB!',
+                        title: 'Ukuran file maksimal 5MB!',
                         showConfirmButton: false,
                         timer: 1000,
                         timerProgressBar: true
@@ -326,7 +352,7 @@
                 }
                 reader.readAsDataURL(file);
 
-                const fileSizeKB = (file.size / 1024).toFixed(2);
+                const fileSizeKB = (file.size / 1000).toFixed(2);
                 sizeInfo.textContent = `Ukuran: ${fileSizeKB} KB`;
                 sizeInfo.style.display = 'block';
             } else {
@@ -345,6 +371,16 @@
                     target: input
                 }, previewId, infoId);
             });
+        });
+
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                Swal.close();
+
+                // hapus meta biar gak kebaca lagi
+                document.querySelector('meta[name="flash-success"]')?.remove();
+                document.querySelector('meta[name="flash-error"]')?.remove();
+            }
         });
     </script>
 </body>

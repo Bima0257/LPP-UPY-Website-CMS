@@ -7,6 +7,7 @@ use App\Services\WorkProgramService;
 use App\Http\Requests\StoreWorkProgramRequest;
 use App\Http\Requests\UpdateWorkProgramRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 
 class WorkProgramController extends Controller
 {
@@ -52,6 +53,7 @@ class WorkProgramController extends Controller
     public function store(StoreWorkProgramRequest $request)
     {
         $this->service->store($request);
+        Cache::forget('dashboard.prokers');
 
         return redirect()->route('work-programs.index')->with('success', 'Program kerja berhasil ditambahkan!');
     }
@@ -83,6 +85,7 @@ class WorkProgramController extends Controller
     public function update(UpdateWorkProgramRequest $request, WorkProgram $workProgram)
     {
         $this->service->update($request, $workProgram);
+        Cache::forget('dashboard.prokers');
 
         return redirect()->route('work-programs.index')->with('success', 'Program kerja berhasil diperbarui!');
     }
@@ -94,6 +97,8 @@ class WorkProgramController extends Controller
     {
 
         $this->service->destroy($workProgram);
+
+        Cache::forget('dashboard.prokers');
 
         return redirect()->route('work-programs.index')->with('success', 'Program kerja berhasil dihapus!');
     }

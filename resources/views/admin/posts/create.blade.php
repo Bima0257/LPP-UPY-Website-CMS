@@ -58,6 +58,18 @@
                             </div>
                             {{-- Kolom kanan --}}
                             <div class="col-md-6">
+
+                                {{-- Tanggal Pelaksanaan --}}
+                                <div class="mb-3">
+                                    <label for="date" class="col-form-label">Tanggal Dokumen</label>
+                                    <input type="date" name="date" id="date"
+                                        class="form-control @error('date') is-invalid @enderror"
+                                        value="{{ old('date') }}" required>
+                                    @error('date')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
                                 {{-- Thumbnail --}}
                                 <div class="mb-3">
                                     <label for="thumbnail" class="col-form-label">Thumbnail</label>
@@ -70,7 +82,7 @@
                                         <input type="file" name="thumbnail"
                                             class="form-control @error('thumbnail') is-invalid @enderror"
                                             accept="image/*" data-preview="previewThumbnail" data-info="thumbFileInfo">
-                                        <small class="text-muted">Format: JPG, PNG, Max 1MB</small>
+                                        <small class="text-muted">Format: JPG, PNG, Max 5MB</small>
                                         @error('thumbnail')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -89,7 +101,7 @@
                                         <input type="file" name="image"
                                             class="form-control @error('image') is-invalid @enderror" accept="image/*"
                                             data-preview="previewImage" data-info="imgFileInfo">
-                                        <small class="text-muted">Format: JPG, PNG, Max 1MB</small>
+                                        <small class="text-muted">Format: JPG, PNG, Max 5MB</small>
                                         @error('image')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror

@@ -32,13 +32,13 @@
 
                                     <span class="me-3">
                                         By <a class="text-white"
-                                            href="{{ route('posts.byAuthor', $post->author->name) }}">{{ $post->author->name ?? '-' }}
+                                            href="{{ route('posts.byAuthor', $post->author->name ?? '-') }}">{{ $post->author->name ?? '-' }}
                                         </a>
                                     </span>
 
                                     <span>
                                         Kategori - <a class="text-white"
-                                            href="{{ route('posts.byCategory', $post->category->slug) }}">{{ $post->category->name ?? '-' }}
+                                            href="{{ route('posts.byCategory', $post->category->slug ?? '-') }}">{{ $post->category->name ?? '-' }}
                                         </a>
                                     </span>
                                 </div>
@@ -69,7 +69,7 @@
                                     @foreach ($categories as $item)
                                         <li>
                                             <a
-                                                href="{{ route('posts.category', $item->slug) }}">{{ $item->name }}</a>
+                                                href="{{ route('posts.category', $item->slug ?? '-') }}">{{ $item->name }}</a>
                                         </li>
                                     @endforeach
                                 @else

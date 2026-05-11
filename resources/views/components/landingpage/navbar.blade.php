@@ -128,7 +128,7 @@
                                        </li>
                                        @foreach ($services as $service)
                                            <li class="ud-submenu-item">
-                                               <a href="{{ $service->link }}" target="_blank" class="ud-submenu-link">
+                                               <a href="{{ filter_var($service?->link, FILTER_VALIDATE_URL) ? $service->link : '#' }}" target="_blank" class="ud-submenu-link">
                                                    {{ $service->name }}
                                                </a>
                                            </li>

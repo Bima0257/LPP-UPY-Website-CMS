@@ -16,10 +16,37 @@ class PostLandingpageController extends Controller
     public function posts(Request $request)
     {
         $query = Posts::with('category', 'author')->where('is_published', 1);
+        $categories = PostCategories::where('is_published', 1)
+            ->orderBy('sort_order')
+            ->get();
 
         if ($request->filled('search')) {
             $query->search($request->input('search'));
         }
+
+        if ($request->filled('category')) {
+            $query->whereHas('category', function ($q) use ($request) {
+                $q->where('slug', $request->category);
+            });
+        }
+
+        // 📅 FILTER DATE RANGE
+        if ($request->filled('date_from') && $request->filled('date_to')) {
+            $query->whereBetween('date', [
+                $request->date_from,
+                $request->date_to
+            ]);
+        } elseif ($request->filled('date_from')) {
+            $query->whereDate('date', '>=', $request->date_from);
+        } elseif ($request->filled('date_to')) {
+            $query->whereDate('date', '<=', $request->date_to);
+        }
+
+        $sort = $request->get('sort', 'desc');
+        $sort = in_array($sort, ['asc', 'desc']) ? $sort : 'desc';
+
+        $query->orderBy('date', $sort);
+
 
         $userAgent = $request->header('User-Agent');
         $isMobile = preg_match('/Mobile|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i', $userAgent);
@@ -28,16 +55,20 @@ class PostLandingpageController extends Controller
         // Generate Cache Key based on pagination & search query
         $page = $request->get('page', 1);
         $search = $request->get('search', '');
-        $cacheKey = "posts_page_{$page}_per_{$perPage}_search_{$search}";
+        $category = $request->get('category', '');
+        $dateFrom = $request->get('date_from', '');
+        $dateTo   = $request->get('date_to', '');
+
+        $cacheKey = "posts_page_{$page}_per_{$perPage}_search_{$search}_cat_{$category}_sort_{$sort}_date_from_{$dateFrom}_date_to_{$dateTo}";
 
         // Cache the query for 10 minutes
         $all_posts = Cache::remember($cacheKey, now()->addMinutes(10), function () use ($query, $perPage) {
-            return $query->latest()->paginate($perPage)->withQueryString();
+            return $query->paginate($perPage)->withQueryString();
         });
 
 
         $title = 'Semua Artikel';
-        return view('landingpage.all-post', compact('all_posts', 'title'));
+        return view('landingpage.all-post', compact('all_posts', 'title', 'categories'));
     }
 
     public function categoryPostAll()
@@ -73,7 +104,7 @@ class PostLandingpageController extends Controller
         $cacheKey = "lp_posts_cat_{$slug}_page_{$page}_per_{$perPage}_search_{$search}";
 
         $all_posts = Cache::remember($cacheKey, now()->addMinutes(10), function () use ($query, $perPage) {
-            return $query->latest()->paginate($perPage)->withQueryString();
+            return $query->latest('date')->paginate($perPage)->withQueryString();
         });
         $title = 'Kategori | ' . $category->name;
 
@@ -101,16 +132,16 @@ class PostLandingpageController extends Controller
             ->where(function ($qBuilder) use ($query) {
                 $qBuilder->where('title', 'like', "%{$query}%")
                     ->orWhere('content', 'like', "%{$query}%")
-                    ->orWhereRaw("DATE_FORMAT(created_at, '%d %M %Y') LIKE ?", ["%{$query}%"]);
+                    ->orWhere('date', 'LIKE', "%{$query}%");
             })
-            ->select('id', 'title', 'created_at')
-            ->orderBy('created_at', 'desc')
+            ->select('id', 'title', 'date')
+            ->orderBy('date', 'desc')
             ->limit(5)
             ->get()
             ->map(fn($post) => [
                 'id'         => $post->id,
                 'title'      => $post->title,
-                'created_at' => $post->created_at->format('d M Y'),
+                'date' => $post->date ? \Carbon\Carbon::parse($post->date)->format('d M Y') : null,
             ]);
 
         return response()->json($posts);
@@ -141,7 +172,7 @@ class PostLandingpageController extends Controller
         $cacheKey = "lp_posts_author_{$author->id}_page_{$page}_per_{$perPage}_search_{$search}";
 
         $all_posts = Cache::remember($cacheKey, 600, function () use ($query, $perPage) {
-            return $query->latest()->paginate($perPage)->withQueryString();
+            return $query->latest('date')->paginate($perPage)->withQueryString();
         });
 
         return view('landingpage.all-post', compact('title', 'all_posts', 'author'));
@@ -149,7 +180,7 @@ class PostLandingpageController extends Controller
 
     public function byCategory(Request $request, PostCategories $category)
     {
-        $title = "Artikel di - " . $category->name;
+        $title = "Artikel | " . $category->name;
 
         // 🔹 Query builder awal: semua post di kategori ini yang dipublish
         $query = Posts::where('post_category_id', $category->id)
@@ -172,7 +203,7 @@ class PostLandingpageController extends Controller
         $cacheKey = "lp_posts_catid_{$category->id}_page_{$page}_per_{$perPage}_search_{$search}";
 
         $all_posts = Cache::remember($cacheKey, now()->addMinutes(10), function () use ($query, $perPage) {
-            return $query->latest()->paginate($perPage)->withQueryString();
+            return $query->latest('date')->paginate($perPage)->withQueryString();
         });
 
         return view('landingpage.all-post', compact('title', 'all_posts', 'category'));
@@ -192,7 +223,7 @@ class PostLandingpageController extends Controller
 
         $relatedPosts = Posts::where('id', '!=', $post->id)
             ->where('post_category_id', $post->post_category_id)
-            ->latest()
+            ->latest('date')
             ->take(3)
             ->get();
 

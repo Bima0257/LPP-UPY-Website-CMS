@@ -9,6 +9,19 @@ use Illuminate\Support\Facades\Validator;
 
 class PostCategoriesController extends Controller
 {
+
+    private function clearCategoryCache()
+    {
+        Cache::forget('lp_categories_all');
+
+        // category mempengaruhi posts juga
+        for ($page = 1; $page <= 5; $page++) {
+            foreach ([2, 6] as $perPage) {
+                Cache::forget("posts_page_{$page}_per_{$perPage}_search_");
+            }
+        }
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -56,9 +69,10 @@ class PostCategoriesController extends Controller
         ]);
 
         Cache::forget('post_categories_footer');
-        Cache::forget('post_categories');
         Cache::forget('lp_categories_all');
-
+        Cache::forget('post_categories');
+        Cache::forget('dashboard.post_categories');
+        $this->clearCategoryCache();
 
         // 6️⃣ Redirect sukses
         return redirect()->route('posts-categories.index')
@@ -107,8 +121,10 @@ class PostCategoriesController extends Controller
         ]);
 
         Cache::forget('post_categories_footer');
-        Cache::forget('post_categories');
         Cache::forget('lp_categories_all');
+        Cache::forget('post_categories');
+        Cache::forget('dashboard.post_categories');
+        $this->clearCategoryCache();
 
         return redirect()->route('posts-categories.index')
             ->with('success', 'Kategori Post berhasil diperbarui!');
@@ -127,8 +143,10 @@ class PostCategoriesController extends Controller
         }
 
         Cache::forget('post_categories_footer');
-        Cache::forget('post_categories');
         Cache::forget('lp_categories_all');
+        Cache::forget('post_categories');
+        Cache::forget('dashboard.post_categories');
+        $this->clearCategoryCache();
 
         return redirect('/posts-categories')->with('success', 'Kategori Post Telah Di hapus!');
     }
@@ -140,8 +158,10 @@ class PostCategoriesController extends Controller
         }
 
         Cache::forget('post_categories_footer');
-        Cache::forget('post_categories');
         Cache::forget('lp_categories_all');
+        Cache::forget('post_categories');
+        Cache::forget('dashboard.post_categories');
+        $this->clearCategoryCache();
 
         return response()->json(['success' => true]);
     }

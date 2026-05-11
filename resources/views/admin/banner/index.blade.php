@@ -69,7 +69,7 @@
                             <label for="image" class="form-label">Pilih Gambar</label>
                             <input type="file" name="image" id="image" accept="image/*" class="form-control">
                             <small id="fileSize" class="text-muted mt-3 d-block"></small>
-                            <small class="text-muted">Format: JPG, PNG, WEBP (max 1MB)</small>
+                            <small class="text-muted">Format: JPG, PNG, WEBP (max 5MB)</small>
                         </div>
                     </div>
 

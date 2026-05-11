@@ -18,10 +18,9 @@
                             <tr>
                                 <th>No</th>
                                 <th>Author</th>
+                                <th>Tanggal</th>
                                 <th>Kategori</th>
                                 <th>Title</th>
-                                <th>Thumbnail</th>
-                                <th>Image</th>
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
@@ -32,18 +31,10 @@
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
                                     <td>{{ $post->author?->name ?? '-' }}</td>
+                                    <td data-order="{{ \Carbon\Carbon::parse($post->date)->format('Y-m-d') }}">
+                                        {{ \Carbon\Carbon::parse($post->date)->format('d M Y') }}</td>
                                     <td>{{ $post->category?->name ?? '-' }}</td>
                                     <td>{{ $post->title }}</td>
-                                    <td>
-                                        <img src="{{ asset('storage/' . $post->thumbnail) }}" alt="post-img"
-                                            width="50" height="50"
-                                            style="object-fit: cover; box-shadow: 0 0 5px rgba(0,0,0,0.2);">
-                                    </td>
-                                    <td>
-                                        <img src="{{ asset('storage/' . $post->image) }}" alt="post-img" width="50"
-                                            height="50"
-                                            style="object-fit: cover; box-shadow: 0 0 5px rgba(0,0,0,0.2);">
-                                    </td>
                                     <td>
                                         @if ($post->is_published)
                                             <span class="badge bg-success">Published</span>

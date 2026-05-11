@@ -23,6 +23,10 @@
 
     <!-- Sweet Alert-->
     <link href="{{ asset('assets_admin/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
+
+    <!-- Di bagian <head> atau layout -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
+
 </head>
 
 <body>
@@ -46,6 +50,11 @@
 
     <!-- Sweet Alerts js -->
     <script src="{{ asset('assets_admin/libs/sweetalert2/sweetalert2.min.js') }}"></script>
+
+
+    <!-- Di bagian scripts -->
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
 
     <script>
         // ==== for menu scroll

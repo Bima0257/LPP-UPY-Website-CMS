@@ -4,8 +4,8 @@ namespace App\Services;
 
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Validation\Rule;
 
 class UserService
 {
@@ -26,7 +26,7 @@ class UserService
         return User::create([
             'name' => $data['name'],
             'username' => $data['username'],
-            'password' => $data['password'],
+            'password' => Hash::make($data['password']),
             'role' => $data['role'],
             'avatar' => $fotoPath
         ]);
@@ -42,10 +42,13 @@ class UserService
 
         $user->update([
             'name' => $data['name'],
-            'username' => $data['username'] ?? null,
-            'password' => $data['password'],
+            'username' => $data['username'] ?? $user->username,
+            'password' => !empty($data['password'])
+                ? Hash::make($data['password'])
+                : $user->password,
             'avatar' => $newFotoPath ? $newFotoPath : $user->avatar,
-            'role' => ['required', Rule::in(['admin', 'superadmin'])],
+            'role' => $data['role'] ?? $user->role
+        ], [
             'confirm_password.same' => 'Konfirmasi password baru tidak cocok!',
         ]);
 

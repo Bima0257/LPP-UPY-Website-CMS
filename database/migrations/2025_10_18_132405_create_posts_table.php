@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('post_category_id')->nullable()->constrained('post_categories')->onDelete('set null');
             $table->string('title', 200);
+            $table->date('date');
             $table->string('slug', 200)->unique();
             $table->text('content');
             $table->string('thumbnail', 255)->nullable();

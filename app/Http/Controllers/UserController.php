@@ -31,7 +31,7 @@ class UserController extends Controller
             'admin.users-management.index',
             [
                 'title' => 'Users Management',
-                'users' => User::where('id', '!=', Auth::id())->get()
+                'users' => User::where('id', '!=', Auth::id())->latest()->get()
             ]
         );
     }

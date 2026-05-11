@@ -56,6 +56,8 @@ class MessageController extends Controller
             'is_read' => false,
         ]);
 
+        Cache::forget('dashboard.messages');
+
         return back()->with('success', 'Terima kasih, pesanmu telah terkirim!');
     }
 

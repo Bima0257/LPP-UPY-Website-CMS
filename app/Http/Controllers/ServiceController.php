@@ -16,7 +16,7 @@ class ServiceController extends Controller
     {
         return view('admin.service.index', [
             'title' => 'Layanan',
-            'services' => Service::all()
+            'services' => Service::latest()->get()
         ]);
     }
 
@@ -37,7 +37,7 @@ class ServiceController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:150|unique:services,name',
             'description' => 'nullable|string|max:5000',
-            'link' => 'required|url|max:255',
+            'link' => 'required|string|max:255',
         ]);
 
         // 2️⃣ Jika validasi gagal
@@ -89,7 +89,7 @@ class ServiceController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:150|unique:services,name,' . $service->id,
             'description' => 'nullable|string|max:5000',
-            'link' => 'required|url|max:255',
+            'link' => 'required|string|max:255',
         ]);
 
         // 2️⃣ Jika validasi gagal

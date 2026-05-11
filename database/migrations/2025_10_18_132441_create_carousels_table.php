@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('carousels', function (Blueprint $table) {
             $table->id();
+            $table->integer('sort_order')->default(0);
             $table->foreignId('author_id')->constrained('users')->onDelete('cascade');
             $table->string('title')->nullable();
             $table->text('description')->nullable();

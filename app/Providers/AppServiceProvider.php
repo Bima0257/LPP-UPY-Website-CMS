@@ -62,24 +62,24 @@ class AppServiceProvider extends ServiceProvider
 
 
         // Banner (jarang berubah) → cache 1 jam
-        View::share('banner', Cache::remember('banner', 3600, fn() => Banner::first()));
+        View::share('banner', Cache::remember('banner', now()->addHour(), fn() => Banner::first()));
 
         // User login ke navbar admin
         View::composer('components.admin.navbar', function ($view) {
             $user = Auth::user();
-            $about = Cache::remember('about_navbar', 3600, fn() => Abouts::select('white_logo', 'favicon')->first());
+            $about = Cache::remember('about_navbar', now()->addHour(), fn() => Abouts::select('white_logo', 'favicon')->first());
             $view->with(compact('user', 'about'));
         });
 
         // Layout admin
         View::composer('components.admin.layout', function ($view) {
-            $about = Cache::remember('about_layout', 3600, fn() => Abouts::select('favicon')->first());
+            $about = Cache::remember('about_layout', now()->addHour(), fn() => Abouts::select('favicon')->first());
             $view->with(['about' => $about]);
         });
 
         // Kirim data User ke semua view layout
         View::composer('components.landingpage.layout', function ($view) {
-            $about = Cache::remember('about_favicon', 3600, fn() => Abouts::select('favicon')->first());
+            $about = Cache::remember('about_favicon', now()->addHour(), fn() => Abouts::select('favicon')->first());
             $view->with(['about' => $about]);
         });
 
@@ -87,21 +87,21 @@ class AppServiceProvider extends ServiceProvider
         View::composer('components.landingpage.navbar', function ($view) {
             $documentCategories = Cache::remember(
                 'document_categories',
-                3600,
+                now()->addHour(),
                 fn() =>
                 DocumentCategories::where('is_published', 1)->orderBy('sort_order')->get()
             );
 
             $postCategories = Cache::remember(
                 'post_categories',
-                3600,
+                now()->addHour(),
                 fn() =>
                 PostCategories::where('is_published', 1)->orderBy('sort_order')->get()
             );
 
-            $about = Cache::remember('about_logo', 3600, fn() => Abouts::select('white_logo', 'black_logo')->first());
-            $menu = Cache::remember('menu', 3600, fn() => Menu::first());
-            $services = Cache::remember('services', 3600, fn() => Service::take(5)->latest()->get());
+            $about = Cache::remember('about_logo', now()->addHour(), fn() => Abouts::select('white_logo', 'black_logo')->first());
+            $menu = Cache::remember('menu', now()->addHour(), fn() => Menu::first());
+            $services = Cache::remember('services', now()->addHour(), fn() => Service::take(5)->latest()->get());
 
             $view->with([
                 'documentCategories' => $documentCategories,
@@ -116,20 +116,20 @@ class AppServiceProvider extends ServiceProvider
         View::composer('components.landingpage.footer', function ($view) {
             $documentCategories = Cache::remember(
                 'document_categories_footer',
-                3600,
+                now()->addHour(),
                 fn() =>
                 DocumentCategories::where('is_published', 1)->orderBy('sort_order', 'asc')->get()
             );
 
             $postCategories = Cache::remember(
                 'post_categories_footer',
-                3600,
+                now()->addHour(),
                 fn() =>
                 PostCategories::where('is_published', 1)->orderBy('sort_order', 'asc')->get()
             );
 
-            $about = Cache::remember('about_footer', 3600, fn() => Abouts::first());
-            $banner = Cache::remember('banner_footer', 3600, fn() => Banner::select('footer_background')->first());
+            $about = Cache::remember('about_footer', now()->addHour(), fn() => Abouts::first());
+            $banner = Cache::remember('banner_footer', now()->addHour(), fn() => Banner::select('footer_background')->first());
 
             $view->with([
                 'documentCategories' => $documentCategories,

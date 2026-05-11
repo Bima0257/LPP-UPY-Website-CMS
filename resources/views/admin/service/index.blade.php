@@ -33,9 +33,9 @@
                                     <td>{!! Str::words(strip_tags($service->description), 7, '...') !!}</td>
                                     <td>
                                         @if ($service->link)
-                                            <a href="{{ $service->link }}" target="_blank"
+                                            <a href="{{ filter_var($service?->link, FILTER_VALIDATE_URL) ? $service->link : '#' }}" target="_blank"
                                                 class="text-decoration-none text-primary">
-                                                {{ $service->link }}
+                                                {{ Str::limit($service->link, 30) }}
                                             </a>
                                         @else
                                             <span>-</span>
@@ -111,7 +111,7 @@
                             {{-- Link --}}
                             <div class="mb-3">
                                 <label for="link" class="col-form-label">Link</label>
-                                <input type="url" name="link" id="link"
+                                <input type="string" name="link" id="link"
                                     class="form-control @error('link') is-invalid @enderror"
                                     placeholder="Masukkan link layanan" value="{{ old('link') }}" required>
                                 @error('link')

@@ -26,9 +26,10 @@ class PostStoreRequest extends FormRequest
         return [
             'post_category_id' => 'nullable|exists:post_categories,id',
             'title' => 'required|string|max:200',
+            'date' => 'required|date',
             'content' => 'required|string',
-            'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg|max:1024',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:1024',
+            'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg|max:5000',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:5000',
             'is_published' => 'required|boolean',
         ];
     }

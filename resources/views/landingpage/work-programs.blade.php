@@ -5,10 +5,12 @@
             ? asset('storage/' . $banner->banner_background)
             : asset('assets/images/background/background-default.jpg') }}');">
         <!-- start page title -->
-        <div class="row">
-            <div class="col-12">
-                <div class="ud-banner-content">
-                    <h1>Program Kerja</h1>
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="ud-banner-content">
+                        <h1>Program Kerja</h1>
+                    </div>
                 </div>
             </div>
         </div>

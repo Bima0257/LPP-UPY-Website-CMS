@@ -4,9 +4,7 @@ namespace App\Services;
 
 use App\Models\Posts;
 use App\Traits\UploadTrait;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
 
@@ -44,8 +42,8 @@ class PostService
                 Storage::disk('public')->delete($post->thumbnail);
             }
 
-            $fileInfo = $this->uploadDoc($data['thumbnail']);
-            $data['thumbnail'] = $fileInfo['file_name'];
+            $path = $this->uploadImage($data['thumbnail'], 'thumbnails');
+            $data['thumbnail'] = $path;
         }
 
         // Update image
@@ -56,8 +54,8 @@ class PostService
                 Storage::disk('public')->delete($post->image);
             }
 
-            $fileInfo = $this->uploadDoc($data['image']);
-            $data['image'] = $fileInfo['file_name'];
+            $path = $this->uploadImage($data['image'], 'images');
+            $data['image'] = $path;
         }
 
         $post->update($data);

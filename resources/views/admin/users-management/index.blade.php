@@ -184,7 +184,7 @@
                                             accept="image/*"
                                             onchange="previewImage(event, 'preview', 'fileSizeInfo', window.defaultAvatar)">
                                         <!-- Info ukuran -->
-                                        <small class="text-danger">Upload foto profil (jpg, png, max 1MB).</small>
+                                        <small class="text-danger">Upload foto profil (jpg, png, max 5MB).</small>
                                         @error('avatar')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror

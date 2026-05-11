@@ -23,9 +23,9 @@
 
                                 <div class="mb-3">
                                     <label for="btn_link" class="form-label">Link Tombol</label>
-                                    <input type="url" name="btn_link" id="btn_link"
+                                    <input type="text" name="btn_link" id="btn_link"
                                         class="form-control @error('btn_link') is-invalid @enderror"
-                                        placeholder="link tombol show more">
+                                        placeholder="link tombol show more" required>
                                     @error('btn_link')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -47,8 +47,8 @@
 
                                         <input type="file" name="image" id="image"
                                             class="form-control @error('image') is-invalid @enderror" accept="image/*"
-                                            data-preview="preview" data-info="fileSizeInfo">
-                                        <small class="text-danger">Upload gambar (jpg, png, max 1MB)</small>
+                                            data-preview="preview" data-info="fileSizeInfo" required>
+                                        <small class="text-danger">Upload gambar (jpg, png, max 5MB)</small>
 
                                         @error('image')
                                             <div class="invalid-feedback">{{ $message }}</div>
@@ -61,7 +61,7 @@
                             <div class="mb-3">
                                 <label for="description" class="col-form-label">Deskripsi</label>
                                 <textarea name="description" id="description" rows="4"
-                                    class="form-control @error('description') is-invalid @enderror" placeholder="Masukkan deskripsi singkat">{{ old('description') }}</textarea>
+                                    class="form-control @error('description') is-invalid @enderror" placeholder="Masukkan deskripsi singkat" required>{{ old('description') }}</textarea>
                                 @error('description')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -72,9 +72,9 @@
                                 <label for="is_published" class="col-form-label">Status Publikasi</label>
                                 <select name="is_published" id="is_published"
                                     class="form-select @error('is_published') is-invalid @enderror" required>
-                                    <option value="0" {{ old('is_published') == '0' ? 'selected' : '' }}>Draft
+                                    <option value="1" {{ old('is_published') == '1' ? 'selected' : '' }}>Public
                                     </option>
-                                    <option value="1" {{ old('is_published') == '1' ? 'selected' : '' }}>Publik
+                                    <option value="0" {{ old('is_published') == '0' ? 'selected' : '' }}>Draft
                                     </option>
                                 </select>
                                 @error('is_published')

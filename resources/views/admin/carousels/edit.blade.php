@@ -28,7 +28,7 @@
 
                                 <div class="mb-3">
                                     <label for="btn_link" class="form-label">Link Tombol</label>
-                                    <input type="url" name="btn_link" id="btn_link"
+                                    <input type="text" name="btn_link" id="btn_link"
                                         class="form-control @error('btn_link') is-invalid @enderror"
                                         placeholder="link tombol show more"
                                         value="{{ old('btn_link', $carousel->btn_link) }}">
@@ -60,7 +60,7 @@
                                         <input type="file" name="image" id="image"
                                             class="form-control @error('image') is-invalid @enderror" accept="image/*"
                                             onchange="previewImage(event, 'preview', 'fileSizeInfo')">
-                                        <small class="text-danger">Upload gambar (jpg, png, max 1MB)</small>
+                                        <small class="text-danger">Upload gambar (jpg, png, max 5MB)</small>
 
                                         @error('image')
                                             <div class="invalid-feedback">{{ $message }}</div>
